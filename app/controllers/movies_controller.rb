@@ -7,10 +7,11 @@ class MoviesController < ApplicationController
   end
 
   def index
+    @all_ratings = Movie.all_ratings
+
     if !params[:sort_by].nil?
       session[:sort_by] = params[:sort_by]
     end
-
 
     if session["sort_by"] == "title"
       @title_class = 'hilite'
@@ -24,6 +25,19 @@ class MoviesController < ApplicationController
       @movies = Movie.all
     end
 
+    if params.has_key? :ratings
+      session[:ratings] = params[:ratings]
+    elsif params.has_key? :commit
+      session[:ratings] = nil
+    end
+    
+    if !session[:ratings].nil?
+      @movies = @movies.select do |m|
+        session[:ratings].include? m.rating
+      end
+    else
+        @movies = nil
+    end
   end
 
   def new
