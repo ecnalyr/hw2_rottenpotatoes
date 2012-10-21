@@ -9,37 +9,35 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = Movie.all_ratings
 
-
-    if !params[:sort_by].nil?
-      session[:sort_by] = params[:sort_by]
-    end
-
-    if session["sort_by"] == "title"
-      @title_class = 'hilite'
-      @movies = Movie.order(session[:sort_by])
-    elsif session["sort_by"] == 'release_date'
-      @release_date_class = 'hilite'
-      @movies = Movie.order(session[:sort_by])
-    end
-
-    if params[:sort_by].nil?
-      @movies = Movie.all
-    end
-
-    if params.has_key? :ratings
+    if params[:commit] == 'Refresh'
       session[:ratings] = params[:ratings]
-    elsif params.has_key? :commit
-      session[:ratings] = nil
-    else
-      session[:ratings] = params[@all_ratings]
+    elsif session[:ratings] != params[:ratings]
+      redirect = true
+      params[:ratings] = session[:ratings]
+    end
+
+    if params[:orderby]
+      session[:orderby] = params[:orderby]
+    elsif session[:orderby]
+      redirect = true
+      params[:orderby] = session[:orderby]
     end
     
-    if !session[:ratings].nil?
-      @movies = @movies.select do |m|
-        session[:ratings].include? m.rating
+    @ratings, @orderby = session[:ratings], session[:orderby]
+    if redirect
+      redirect_to movies_path({:orderby=>@orderby, :ratings=>@ratings})
+    elsif
+      columns = {'title'=>'title', 'release_date'=>'release_date'}
+      if columns.has_key?(@orderby)
+        query = Movie.order(columns[@orderby])
+      else
+        @orderby = nil
+        query = Movie
       end
+      
+      @movies = @ratings.nil? ? query.all : query.find_all_by_rating(@ratings.map { |r| r[0] })
+      @all_ratings = Movie.all_ratings  
     end
-
   end
 
   def new
