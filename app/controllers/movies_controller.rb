@@ -36,7 +36,6 @@ class MoviesController < ApplicationController
         session[:ratings].include? m.rating
       end
     else
-        @movies = nil
     end
   end
 
