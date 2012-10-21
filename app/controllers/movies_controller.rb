@@ -9,6 +9,7 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = Movie.all_ratings
 
+
     if !params[:sort_by].nil?
       session[:sort_by] = params[:sort_by]
     end
@@ -29,14 +30,16 @@ class MoviesController < ApplicationController
       session[:ratings] = params[:ratings]
     elsif params.has_key? :commit
       session[:ratings] = nil
+    else
+      session[:ratings] = params[@all_ratings]
     end
     
     if !session[:ratings].nil?
       @movies = @movies.select do |m|
         session[:ratings].include? m.rating
       end
-    else
     end
+
   end
 
   def new
