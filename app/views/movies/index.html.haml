@@ -7,7 +7,7 @@
     -if((!session[:ratings].nil?) && (session[:ratings]["#{rating}"] == "1")) 
       = check_box_tag "ratings[#{rating}]", 1, true
     -else
-      = check_box_tag "ratings[#{rating}]", 1, false
+      = check_box_tag "ratings[#{rating}]", 1, true
   = submit_tag 'Refresh', :id => "ratings_submit"
 %table#movies
   %thead
